@@ -12,19 +12,23 @@ class QuotesSpider(scrapy.Spider):
     # Urls already fetched successfully
     previous_urls = set(pd.read_excel('conditions_urls_with_symptoms.xlsx')['condition_url'])
 
-    start_urls = all_urls.difference(previous_urls)
+    start_urls = list(all_urls.difference(previous_urls))#[:10]
     print('Urls left to fetch %s' % len(start_urls))
+    #print(start_urls)
 
     def parse(self, response):
         print('Fetching url %s' % response.url)
         try:
-            symptoms = response.css('.contentBox h2:contains("signs and symptoms")~ul')[0] \
-                .get() \
-                .replace("<ul>", "") \
-                .replace("<li>", "") \
-                .replace("</ul>", "") \
-                .replace("</li>", "") \
-                .split("\n")
+            #Recipe1
+            # symptoms = response.css('.contentBox h2:contains("signs and symptoms")~ul')[0] \
+            #     .get() \
+            #     .replace("<ul>", "") \
+            #     .replace("<li>", "") \
+            #     .replace("</ul>", "") \
+            #     .replace("</li>", "") \
+            #     .split("\n")
+            #Recipe2
+            symptoms = response.css('.contentBox h2:contains("signs and symptoms")~p').get().replace("<p>","").replace("</p>", "").split("\n")
             if symptoms is not None:
                 # symptoms["symptoms"] = list(filter(lambda sym: sym != '', symptoms))
                 print(list(filter(lambda sym: sym != '', symptoms)))
